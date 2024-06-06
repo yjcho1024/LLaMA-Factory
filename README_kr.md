@@ -1,3 +1,47 @@
+### 1. 라마 팩토리에 대한 간단한 사용 방법
+- train_sft.sh 실행 스크립트를 만들어놨습니다. 이 스크립트를 이용하여 LLM을 튜닝하세요.
+```
+git clone https://github.com/llm-fine-tuning/LLaMA-Factory.git
+pip install -r requirements.txt
+pip install deepspeed==0.14
+```
+### 2. 데이터 형식
+- data 폴더를 보면 json 데이터 형식이 있는데 이를 참고하여 데이터를 만드세요.
+- 모든 데이터는 템플릿과 결합되어 전처리가 진행됩니다. 템플릿에 대한 설명은 3. 템플릿을 참고하세요.
+
+#### 2-1. SFT 데이터 예시
+- 예를 들어 data 폴더 내의 alpaca_en_demo.json 형식을 보면 아래와 같습니다.
+
+##### 전처리 전
+```
+{
+    "instruction": "Describe a process of making crepes.",
+    "input": "",
+    "output": "Making crepes is an easy and delicious process! Here are step-by-step instructions on how to make them:\n\n1. Assemble your ingredients. For basic crepes, you'll need: 1 cup all-purpose flour, 2 eggs, 1/2 cup milk, 1/2 cup water, 1/4 teaspoon salt, and 2 tablespoons melted butter.\n\n2. Mix the batter: In a large mixing bowl, whisk together the flour and the eggs. Gradually add the milk and water, stirring constantly to ensure that there are no lumps. Add salt and melted butter, and mix well.\n\n3. Let the batter rest: If you can, let the batter sit for an hour or so. This will help the flour to absorb the liquid and make the crepes more tender.\n\n4. Heat your pan: Preheat a non-stick pan over medium heat. Lightly butter the pan or use cooking spray to prevent the crepes from sticking.\n\n5. Pour the batter: Using a ladle or a measuring cup, pour a small amount of batter (about 1/4 cup) onto the center of the pan. Immediately tilt the pan in a circular motion to spread the batter evenly and thinly over the bottom of the pan.\n\n6. Cook the crepe: Cook the crepe for 1-2 minutes until the bottom is lightly golden. Carefully loosen the edges with a spatula and flip the crepe over to cook the other side for another minute.\n\n7. Remove and repeat: Gently slide the crepe onto a plate, and then repeat the process with the remaining batter. Remember to re-butter the pan between each crepe if necessary.\n\n8. Fill and serve: Fill your cooked crepes with your desired filling, such as fresh fruit, whipped cream, Nutella, or ham and cheese. Roll or fold, and serve immediately. Enjoy!"
+}
+```
+##### 전처리 후 (default 템플릿 기준)
+- instruction이 현 질문에 해당하며, output이 현 질문에 대한 답변으로 전처리됩니다.
+```
+Human: Describe a process of making crepes.<|im_end|>
+Assistant: Making crepes is an easy and delicious process! Here are step-by-step instructions on how to make them:\n\n1. Assemble your ingredients. For basic crepes, you'll need: 1 cup all-purpose flour, 2 eggs, 1/2 cup milk, 1/2 cup water, 1/4 teaspoon salt, and 2 tablespoons melted butter.\n\n2. Mix the batter: In a large mixing bowl, whisk together the flour and the eggs. Gradually add the milk and water, stirring constantly to ensure that there are no lumps. Add salt and melted butter, and mix well.\n\n3. Let the batter rest: If you can, let the batter sit for an hour or so. This will help the flour to absorb the liquid and make the crepes more tender.\n\n4. Heat your pan: Preheat a non-stick pan over medium heat. Lightly butter the pan or use cooking spray to prevent the crepes from sticking.\n\n5. Pour the batter: Using a ladle or a measuring cup, pour a small amount of batter (about 1/4 cup) onto the center of the pan. Immediately tilt the pan in a circular motion to spread the batter evenly and thinly over the bottom of the pan.\n\n6. Cook the crepe: Cook the crepe for 1-2 minutes until the bottom is lightly golden. Carefully loosen the edges with a spatula and flip the crepe over to cook the other side for another minute.\n\n7. Remove and repeat: Gently slide the crepe onto a plate, and then repeat the process with the remaining batter. Remember to re-butter the pan between each crepe if necessary.\n\n8. Fill and serve: Fill your cooked crepes with your desired filling, such as fresh fruit, whipped cream, Nutella, or ham and cheese. Roll or fold, and serve immediately. Enjoy!<|im_end|>
+```
+
+
+### 3. 템플릿
+- `src > llamafactory > data > template.py` 폴더를 보면 각 LLM마다 템플릿이 존재합니다. json과 템플릿이 결합되어 전처리가 진행됩니다.
+- 예를 들어 default 템플릿은 아래와 같습니다.
+```
+_register_template(
+    name="default",
+    format_user=StringFormatter(slots=["Human: {{content}}\nAssistant: "]),
+    format_system=StringFormatter(slots=["{{content}}\n"]),
+    format_separator=EmptyFormatter(slots=["\n"]),
+)
+```
+
+---
+
 ![# LLaMA Factory](assets/logo.png)
 
 [![GitHub Repo stars](https://img.shields.io/github/stars/hiyouga/LLaMA-Factory?style=social)](https://github.com/hiyouga/LLaMA-Factory/stargazers)
