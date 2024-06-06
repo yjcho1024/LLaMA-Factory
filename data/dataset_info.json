@@ -2,6 +2,9 @@
   "identity": {
     "file_name": "identity.json"
   },
+  "text_to_sql_data": {
+    "file_name": "text_to_sql_data.json"
+  },
   "alpaca_en_demo": {
     "file_name": "alpaca_en_demo.json"
   },
