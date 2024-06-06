@@ -67,7 +67,7 @@ _register_template(
 - 이제 기존 템플릿을 사용하거나 신규로 추가하여야 합니다. 템플릿 등록은 `src > llamafactory > data > template.py`에서 가능합니다.
 - `name`의 값으로 템플릿의 이름을 추가합니다. 예를 들어서 `llama3-text-to-sql`를 사용한다고 가정해봅시다.
 - `default_system`은 시스템 프롬프트를 의미합니다. 예를 들어서 다음과 같은 시스템 프롬프트를 추가한다고 가정해봅시다.
-- `당신은 주어진 `입력 텍스트:`와 `DDL Statements`를 참고하여 SQL 쿼리를 작성하는 SQL 쿼리 작성기입니다.\n`쿼리 작성:`이라고 하면 바로 SQL 쿼리를 작성하세요.`
+- "당신은 주어진 `입력 텍스트:`와 `DDL Statements`를 참고하여 SQL 쿼리를 작성하는 SQL 쿼리 작성기입니다.\n`쿼리 작성:`이라고 하면 바로 SQL 쿼리를 작성하세요."
 ```python
 _register_template(
     name="llama3-text-to-sql",
