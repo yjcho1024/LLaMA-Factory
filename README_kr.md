@@ -1,16 +1,16 @@
-### 1. 라마 팩토리에 대한 간단한 사용 방법
+## 1. 라마 팩토리에 대한 간단한 사용 방법
 - train_sft.sh 실행 스크립트를 만들어놨습니다. 이 스크립트를 이용하여 LLM을 튜닝하세요.
 ```
 git clone https://github.com/llm-fine-tuning/LLaMA-Factory.git
 pip install -r requirements.txt
 pip install deepspeed==0.14
 ```
-### 2. 데이터 형식
+## 2. 데이터 형식
 - `data` 디렉토리를 보면 다양한 json 데이터가 존재하는데 이를 참고하여 데이터를 만드세요.
 - 모든 데이터는 템플릿과 결합되어 전처리가 진행됩니다. 템플릿에 대한 설명은 3. 템플릿을 참고하세요.
 - 예를 들어 `data` 내의 alpaca_en_demo.json 형식을 보면 아래와 같습니다.
 
-##### 전처리 전
+#### 전처리 전
 ```
 {
     "instruction": "Describe a process of making crepes.",
@@ -18,7 +18,7 @@ pip install deepspeed==0.14
     "output": "Making crepes is an easy and delicious process! Here are step-by-step instructions on how to make them:\n\n1. Assemble your ingredients. For basic crepes, you'll need: 1 cup all-purpose flour, 2 eggs, 1/2 cup milk, 1/2 cup water, 1/4 teaspoon salt, and 2 tablespoons melted butter.\n\n2. Mix the batter: In a large mixing bowl, whisk together the flour and the eggs. Gradually add the milk and water, stirring constantly to ensure that there are no lumps. Add salt and melted butter, and mix well.\n\n3. Let the batter rest: If you can, let the batter sit for an hour or so. This will help the flour to absorb the liquid and make the crepes more tender.\n\n4. Heat your pan: Preheat a non-stick pan over medium heat. Lightly butter the pan or use cooking spray to prevent the crepes from sticking.\n\n5. Pour the batter: Using a ladle or a measuring cup, pour a small amount of batter (about 1/4 cup) onto the center of the pan. Immediately tilt the pan in a circular motion to spread the batter evenly and thinly over the bottom of the pan.\n\n6. Cook the crepe: Cook the crepe for 1-2 minutes until the bottom is lightly golden. Carefully loosen the edges with a spatula and flip the crepe over to cook the other side for another minute.\n\n7. Remove and repeat: Gently slide the crepe onto a plate, and then repeat the process with the remaining batter. Remember to re-butter the pan between each crepe if necessary.\n\n8. Fill and serve: Fill your cooked crepes with your desired filling, such as fresh fruit, whipped cream, Nutella, or ham and cheese. Roll or fold, and serve immediately. Enjoy!"
 }
 ```
-##### 전처리 후 (default 템플릿 기준)
+#### 전처리 후 (default 템플릿 기준)
 - instruction이 현 질문에 해당하며, output이 현 질문에 대한 답변으로 전처리됩니다.
 ```
 Human: Describe a process of making crepes.<|im_end|>
@@ -26,7 +26,7 @@ Assistant: Making crepes is an easy and delicious process! Here are step-by-step
 ```
 
 
-### 3. 템플릿
+## 3. 템플릿
 - `src > llamafactory > data > template.py` 폴더를 보면 각 LLM마다 템플릿이 존재합니다. json과 템플릿이 결합되어 전처리가 진행됩니다.
 - 예를 들어 default 템플릿은 아래와 같습니다.
 ```
@@ -38,7 +38,7 @@ _register_template(
 )
 ```
 
-### 4. 신규 데이터 추가
+## 4. 신규 데이터 추가
 - text-to-sql 문제를 푼다고 가정하고 설명해보겠습니다.
 
 #### 4-1. 신규 데이터 추가
@@ -63,7 +63,7 @@ _register_template(
   }
 ```
 
-#### 4-3. 템플릭 사용 or 추가
+#### 4-3. 템플릿 사용 or 추가
 - 이제 기존 템플릿을 사용하거나 신규로 추가하여야 합니다. 템플릿 등록은 `src > llamafactory > data > template.py`에서 가능합니다.
 - `name`의 값으로 템플릿의 이름을 추가합니다. 예를 들어서 `llama3-text-to-sql`를 사용한다고 가정해봅시다.
 - `default_system`은 시스템 프롬프트를 의미합니다. 예를 들어서 다음과 같은 시스템 프롬프트를 추가한다고 가정해봅시다.
