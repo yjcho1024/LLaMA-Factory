@@ -6,11 +6,9 @@ pip install -r requirements.txt
 pip install deepspeed==0.14
 ```
 ### 2. 데이터 형식
-- data 폴더를 보면 json 데이터 형식이 있는데 이를 참고하여 데이터를 만드세요.
+- `data` 디렉토리를 보면 다양한 json 데이터가 존재하는데 이를 참고하여 데이터를 만드세요.
 - 모든 데이터는 템플릿과 결합되어 전처리가 진행됩니다. 템플릿에 대한 설명은 3. 템플릿을 참고하세요.
-
-#### 2-1. SFT 데이터 예시
-- 예를 들어 data 폴더 내의 alpaca_en_demo.json 형식을 보면 아래와 같습니다.
+- 예를 들어 `data` 내의 alpaca_en_demo.json 형식을 보면 아래와 같습니다.
 
 ##### 전처리 전
 ```
@@ -39,6 +37,65 @@ _register_template(
     format_separator=EmptyFormatter(slots=["\n"]),
 )
 ```
+
+### 4. 신규 데이터 추가
+- text-to-sql 문제를 푼다고 가정하고 설명해보겠습니다.
+
+#### 4-1. 신규 데이터 추가
+- 신규 데이터를 추가하고자 한다면 `data` 디렉토리 내에 추가하세요. 예를 들어서 `text_to_sql_data.json`을 추가한다고 가정해보겠습니다.
+- "instruction"에 모델에 넣을 입력, "output"에 모델이 생성하기를 원하는 출력을 작성하여 데이터를 생성합니다.
+```
+{
+        "instruction": "입력 텍스트: 각 영업사원이 판매한 목재의 총량은 무엇이며, 영업사원별로 정렬된 목록은 무엇인가요?\n\nDDL statements:\nCREATE TABLE salesperson (salesperson_id INT, name TEXT, region TEXT); INSERT INTO salesperson (salesperson_id, name, region) VALUES (1, 'John Doe', 'North'), (2, 'Jane Smith', 'South'); CREATE TABLE timber_sales (sales_id INT, salesperson_id INT, volume REAL, sale_date DATE); INSERT INTO timber_sales (sales_id, salesperson_id, volume, sale_date) VALUES (1, 1, 120, '2021-01-01'), (2, 1, 150, '2021-02-01'), (3, 2, 180, '2021-01-01');\n\n위의 테이블 명세와 사용자의 입력 텍스트를 바탕으로 SQL 쿼리를 작성합니다.",
+        "input": "",
+        "output": "쿼리 작성: SELECT salesperson_id, name, SUM(volume) as total_volume FROM timber_sales JOIN salesperson ON timber_sales.salesperson_id = salesperson.salesperson_id GROUP BY salesperson_id, name ORDER BY total_volume DESC;"
+}
+```
+
+#### 4-2. 신규 데이터를 등록
+- 데이터를 추가하였다면 `data` 디렉토리 내에 있는 `dataset_info.json`에 데이터를 추가해야 합니다.
+- 해당 데이터의 이름을 key값으로 사용합니다. 여기서는 `text_to_sql_data`로 작성하였습니다. (train_sft.sh에서 --dataset의 값으로 사용됩니다.)
+- 그리고 실제 `data` 디렉토리 내에 존재하는 파일명을 `file_name`의 값으로 적어줍니다.
+- 이때 데이터의 이름과 fine_name의 파일명은 동일할 필요는 없습니다.
+```
+  "text_to_sql_data": {
+    "file_name": "text_to_sql_data.json"
+  }
+```
+
+#### 4-3. 템플릭 사용 or 추가
+- 이제 기존 템플릿을 사용하거나 신규로 추가하여야 합니다. 템플릿 등록은 `src > llamafactory > data > template.py`에서 가능합니다.
+- `name`의 값으로 템플릿의 이름을 추가합니다. 예를 들어서 `llama3-text-to-sql`를 사용한다고 가정해봅시다.
+- `default_system`은 시스템 프롬프트를 의미합니다. 예를 들어서 다음과 같은 시스템 프롬프트를 추가한다고 가정해봅시다.
+- `당신은 주어진 `입력 텍스트:`와 `DDL Statements`를 참고하여 SQL 쿼리를 작성하는 SQL 쿼리 작성기입니다.\n`쿼리 작성:`이라고 하면 바로 SQL 쿼리를 작성하세요.`
+```python
+_register_template(
+    name="llama3-text-to-sql",
+    format_user=StringFormatter(
+        slots=[
+            (
+                "<|start_header_id|>user<|end_header_id|>\n\n{{content}}<|eot_id|>"
+                "<|start_header_id|>assistant<|end_header_id|>"
+            )
+        ]
+    ),
+    format_system=StringFormatter(
+        slots=[{"bos_token"}, "<|start_header_id|>system<|end_header_id|>\n\n{{content}}<|eot_id|>"]
+    ),
+    format_observation=StringFormatter(
+        slots=[
+            (
+                "<|start_header_id|>tool<|end_header_id|>\n\n{{content}}<|eot_id|>"
+                "<|start_header_id|>assistant<|end_header_id|>\n\n"
+            )
+        ]
+    ),
+    default_system="당신은 주어진 `입력 텍스트:`와 `DDL Statements`를 참고하여 SQL 쿼리를 작성하는 SQL 쿼리 작성기입니다.\n`쿼리 작성:`이라고 하면 바로 SQL 쿼리를 작성하세요.",
+    stop_words=["<|eot_id|>"],
+    replace_eos=True,
+)
+```
+
 
 ---
 
