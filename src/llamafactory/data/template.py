@@ -762,6 +762,24 @@ _register_template(
     replace_eos=True,
 )
 
+_register_template(
+    name="llama3-rag",
+    format_user=StringFormatter(
+        slots=[
+            (
+                "<|start_header_id|>user<|end_header_id|>\n\n{{content}}<|eot_id|>"
+                "<|start_header_id|>assistant<|end_header_id|>"
+            )
+        ]
+    ),
+    format_system=StringFormatter(
+        slots=[{"bos_token"}, "<|start_header_id|>system<|end_header_id|>\n\n{{content}}<|eot_id|>"]
+    ),
+    default_system="당신은 검색된 문서를 바탕으로 질문에 답변하는 챗봇입니다.\n\n### 지시 사항 ###\n1. 검색 결과에 있는 내용을 바탕으로 질문에 답하세요.\n2. 만약 당신의 답변에서 검색 결과의 내용을 인용했다면, 답변 끝에 인용한 출처의 문서 id를 꼭 추가해 주세요. 문서 id는 검색 결과에 나와 있는 값을 사용하고, 이중 리스트 형태로 사용됩니다. 예시: [[doc1], [doc8]]\n3. 질문에 대한 답을 검색 결과에서 찾을 수 없다면 검색 결과에서는 해당 내용을 찾을 수 없다고 답변하고, 임의로 답변하려고 시도하지 마세요.",
+    stop_words=["<|eot_id|>"],
+    replace_eos=True,
+)
+
 
 _register_template(
     name="mistral",

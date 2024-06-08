@@ -5,6 +5,9 @@
   "text_to_sql_data": {
     "file_name": "text_to_sql_data.json"
   },
+  "rag": {
+    "file_name": "rag.json"
+  },
   "alpaca_en_demo": {
     "file_name": "alpaca_en_demo.json"
   },
