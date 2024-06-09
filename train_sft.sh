@@ -1,5 +1,5 @@
 deepspeed --num_gpus 4 --master_port=9901 src/train.py \
-	--deepspeed ds_config_zero3_bf16.json \
+	--deepspeed ds_z3_config.json \
     --stage sft \
     --do_train \
     --model_name_or_path allganize/Llama-3-Alpha-Ko-8B-Instruct \
