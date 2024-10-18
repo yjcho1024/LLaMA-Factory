@@ -8,6 +8,9 @@
   "rag": {
     "file_name": "rag.json"
   },
+  "hate_speech_detection: {
+    "file_name": "hate_speech_detection.json"
+  },
   "alpaca_en_demo": {
     "file_name": "alpaca_en_demo.json"
   },

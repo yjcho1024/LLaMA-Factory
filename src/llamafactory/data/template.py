@@ -780,6 +780,25 @@ _register_template(
     replace_eos=True,
 )
 
+_register_template(
+    name="llama3-hate-speech-detection",
+    format_user=StringFormatter(
+        slots=[
+            (
+                "<|start_header_id|>user<|end_header_id|>\n\n{{content}}<|eot_id|>"
+                "<|start_header_id|>assistant<|end_header_id|>"
+            )
+        ]
+    ),
+    format_system=StringFormatter(
+        slots=[{"bos_token"}, "<|start_header_id|>system<|end_header_id|>\n\n{{content}}<|eot_id|>"]
+    ),
+    default_system="당신은 주어진 입력이 어떤 혐오 카테고리에 속하는지를 분류하는 분류기입니다.\n\n1. 아래의 카테고리 중에서만 고르세요.\n['출신차별', '외모차별', '정치성향차별', '혐오욕설', '연령차별', '성차별', '인종차별', '종교차별', '혐오아님']\n2. 주어진 입력은 위 8개의 카테고리 중 여러 개에 속할 수 있습니다.\n3. 출력은 반드시 파이썬의 리스트 형태로 생성하십시오.\n4. 입력:이 주어지면 분류 결과: 다음에 파이썬 리스트 형태로 작성하세요.",
+    stop_words=["<|eot_id|>"],
+    replace_eos=True,
+)
+
+
 
 _register_template(
     name="mistral",
