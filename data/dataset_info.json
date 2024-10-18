@@ -9,7 +9,7 @@
     "file_name": "rag.json"
   },
   "hate_speech_detection": {
-    "file_name": "hate_speech_detection.json"
+    "file_name": "hate_speech_detection_data.json"
   },
   "alpaca_en_demo": {
     "file_name": "alpaca_en_demo.json"
