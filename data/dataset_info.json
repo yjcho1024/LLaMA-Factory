@@ -14,6 +14,9 @@
   "esg": {
     "file_name": "esg_data_train.json"
   },
+  "esg_binary_classification": {
+    "file_name": "esg_binary_classification_train.json"
+  },
   "alpaca_en_demo": {
     "file_name": "alpaca_en_demo.json"
   },

@@ -817,6 +817,24 @@ _register_template(
 )
 
 _register_template(
+    name="llama3-esg-binary-classification",
+    format_user=StringFormatter(
+        slots=[
+            (
+                "<|start_header_id|>user<|end_header_id|>\n\n{{content}}<|eot_id|>"
+                "<|start_header_id|>assistant<|end_header_id|>"
+            )
+        ]
+    ),
+    format_system=StringFormatter(
+        slots=[{"bos_token"}, "<|start_header_id|>system<|end_header_id|>\n\n{{content}}<|eot_id|>"]
+    ),
+    default_system="1. 상장사의 뉴스를 보고 ESG 관련 기사인지 판단하시오.\n2. ESG 각각에 대한 핵심 키워드는 아래의 10개 키워드를 참고해서 판단하시오.\n- 환경 (Environmental) : 탄소 배출 감소 (Carbon Emission Reduction), 재생 에너지 사용 (Renewable Energy Usage), 자원 효율성 (Resource Efficiency), 폐기물 관리 (Waste Management), 친환경 제품 개발 (Eco-Friendly Product Development), 기후 변화 대응 (Climate Change Mitigation), 오염 방지 (Pollution Prevention), 생물 다양성 보호 (Biodiversity Protection), 물 관리 (Water Management)\n순환 경제 (Circular Economy)\n- 사회 (Social) : 노동 인권 보호 (Labor Rights Protection), 다양성 및 포용성 (Diversity and Inclusion), 직원 안전 및 건강 (Employee Health & Safety), 공정한 노동 관행 (Fair Labor Practices), 커뮤니티 참여 및 개발 (Community Engagement & Development), 제품 책임 및 안전 (Product Responsibility & Safety), 공급망 책임 (Supply Chain Responsibility), 데이터 보호 및 프라이버시 (Data Protection & Privacy), 인재 개발 및 교육 (Talent Development & Education), 고객 만족도 (Customer Satisfaction)\n- 지배구조 (Governance) : 이사회 독립성 (Board Independence), 윤리적 경영 (Ethical Management), 주주 권리 보호 (Shareholder Rights Protection), 내부 통제 및 감사 (Internal Controls & Audits), 리스크 관리 (Risk Management), 투명한 정보 공개 (Transparent Disclosure), 기업 윤리 및 부패 방지 (Corporate Ethics & Anti-Corruption), 경영진 보상 구조 (Executive Compensation Structure), 컴플라이언스 (Regulatory Compliance), 이해관계자 참여 (Stakeholder Engagement)\n3. 입력이 주어지면 근거를 작성하고 ESG 관련 기사이면 => True 아니면 => False를 작성합니다.\n4. 답변은 항상 '=> True' 또는 '=> False'로 끝나야 하며 그 뒤에 아무 것도 적지마세요.\n5. 지역의 정책이나 장소에 대한 내용이거나, 개인의 사건과 같이 특정 기업에 대한 이야기가 아닌 경우에는 아니라고 판단하세요. 저는 상장 '기업'의 내용에 집중하고 있습니다.\n6. 기업의 경영권 분쟁과 같은 경우에는 단순히 개인의 이야기라고 볼 수 없습니다. 이 경우에도 ESG라고 판단할 수 있습니다.\n7. 개인적인 부고의 기사는 ESG와 관련이 없다고 판단하세요.",
+    stop_words=["<|eot_id|>"],
+    replace_eos=True,
+)
+
+_register_template(
     name="mistral",
     format_user=StringFormatter(slots=["[INST] {{content}} [/INST]"]),
     format_system=StringFormatter(slots=[{"bos_token"}, "{{content}}"]),
