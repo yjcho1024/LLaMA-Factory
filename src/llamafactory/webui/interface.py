@@ -1,4 +1,19 @@
+# Copyright 2024 the LlamaFactory team.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
 import os
+import platform
 
 from ..extras.packages import is_gradio_available
 from .common import save_config
@@ -18,10 +33,11 @@ if is_gradio_available():
     import gradio as gr
 
 
-def create_ui(demo_mode: bool = False) -> gr.Blocks:
+def create_ui(demo_mode: bool = False) -> "gr.Blocks":
     engine = Engine(demo_mode=demo_mode, pure_chat=False)
+    hostname = os.getenv("HOSTNAME", os.getenv("COMPUTERNAME", platform.node())).split(".")[0]
 
-    with gr.Blocks(title="LLaMA Board", css=CSS) as demo:
+    with gr.Blocks(title=f"LLaMA Board ({hostname})", css=CSS) as demo:
         if demo_mode:
             gr.HTML("<h1><center>LLaMA Board: A One-stop Web UI for Getting Started with LLaMA Factory</center></h1>")
             gr.HTML(
@@ -53,11 +69,11 @@ def create_ui(demo_mode: bool = False) -> gr.Blocks:
     return demo
 
 
-def create_web_demo() -> gr.Blocks:
+def create_web_demo() -> "gr.Blocks":
     engine = Engine(pure_chat=True)
 
     with gr.Blocks(title="Web Demo", css=CSS) as demo:
-        lang = gr.Dropdown(choices=["en", "zh"])
+        lang = gr.Dropdown(choices=["en", "ru", "zh", "ko"], scale=1)
         engine.manager.add_elems("top", dict(lang=lang))
 
         _, _, chat_elems = create_chat_box(engine, visible=True)
@@ -71,12 +87,14 @@ def create_web_demo() -> gr.Blocks:
 
 
 def run_web_ui() -> None:
-    gradio_share = os.environ.get("GRADIO_SHARE", "0").lower() in ["true", "1"]
-    server_name = os.environ.get("GRADIO_SERVER_NAME", "0.0.0.0")
+    gradio_ipv6 = os.getenv("GRADIO_IPV6", "0").lower() in ["true", "1"]
+    gradio_share = os.getenv("GRADIO_SHARE", "0").lower() in ["true", "1"]
+    server_name = os.getenv("GRADIO_SERVER_NAME", "[::]" if gradio_ipv6 else "0.0.0.0")
     create_ui().queue().launch(share=gradio_share, server_name=server_name, inbrowser=True)
 
 
 def run_web_demo() -> None:
-    gradio_share = os.environ.get("GRADIO_SHARE", "0").lower() in ["true", "1"]
-    server_name = os.environ.get("GRADIO_SERVER_NAME", "0.0.0.0")
+    gradio_ipv6 = os.getenv("GRADIO_IPV6", "0").lower() in ["true", "1"]
+    gradio_share = os.getenv("GRADIO_SHARE", "0").lower() in ["true", "1"]
+    server_name = os.getenv("GRADIO_SERVER_NAME", "[::]" if gradio_ipv6 else "0.0.0.0")
     create_web_demo().queue().launch(share=gradio_share, server_name=server_name, inbrowser=True)
